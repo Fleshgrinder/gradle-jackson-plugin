@@ -15,16 +15,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Export .java-version
-      run: echo "JAVA_VERSION=$(head -1 .java-version)" >>"$GITHUB_ENV"
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: ${{ env.JAVA_VERSION }}
+    - name: Generate Version
+      run: echo "VERSION=$(date -u '+%Y.%-m%d.%-H%M%S')-SNAPSHOT" >>"$GITHUB_ENV"
+    - uses: actions/checkout@v3
+    - uses: fleshgrinder/setup-java@1
     - name: Run Gradle
       uses: gradle/gradle-build-action@v2
+      env:
+        ORG_GRADLE_PROJECT_version: ${{ env.VERSION }}
       with:
-        arguments: publishSnapshot
+        arguments: publish
+        gradle-home-cache-cleanup: true
+    - name: Cleanup GitHub Releases
+      run: |
+        set -Eeuxo pipefail
+        git fetch --tags
+        git tag --list '*-SNAPSHOT' | while read -r tag; do
+          if gh release delete "$tag" --yes; then
+            echo "deleted release '$tag'" >&2
+          else
+            echo "::warning::could not delete release '$tag'" >&2
+          fi
+          if git push --delete origin "$tag"; then
+            echo "deleted tag '$tag'" >&2
+          else
+            echo "::error::could not delete tag '$tag'" >&2
+          fi
+        done
+    - name: Create GitHub Release
+      run: gh release create "$VERSION" --generate-notes --prerelease --title "v$VERSION"

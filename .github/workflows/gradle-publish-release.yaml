@@ -1,9 +1,9 @@
 name: Publish Release
 
 on:
-  release:
-    types:
-    - released
+  push:
+    tags-ignore:
+    - '*-SNAPSHOT'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,16 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Export .java-version
-      run: echo "JAVA_VERSION=$(head -1 .java-version)" >>"$GITHUB_ENV"
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: ${{ env.JAVA_VERSION }}
+    - uses: actions/checkout@v3
+    - uses: fleshgrinder/setup-java@1
     - name: Run Gradle
       uses: gradle/gradle-build-action@v2
+      env:
+        ORG_GRADLE_PROJECT_version: ${{ github.ref_name }}
       with:
-        arguments: publishRelease
+        arguments: publish
+        gradle-home-cache-cleanup: true

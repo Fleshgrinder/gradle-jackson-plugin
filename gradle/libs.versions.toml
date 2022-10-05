@@ -1,0 +1,14 @@
+[versions]
+jackson = '2.13.4'
+
+[libraries]
+format-csv = { module = 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv', version.ref = 'jackson' }
+format-properties = { module = 'com.fasterxml.jackson.dataformat:jackson-dataformat-properties', version.ref = 'jackson' }
+format-toml = { module = 'com.fasterxml.jackson.dataformat:jackson-dataformat-toml', version.ref = 'jackson' }
+format-xml = { module = 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml', version.ref = 'jackson' }
+format-yaml = { module = 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml', version.ref = 'jackson' }
+module-jdk8 = { module = 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8', version.ref = 'jackson' }
+module-jsr310 = { module = 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310', version.ref = 'jackson' }
+module-kotlin = { module = 'com.fasterxml.jackson.module:jackson-module-kotlin', version.ref = 'jackson' }
+slf4j-api = 'org.slf4j:slf4j-api:2.0.3'
+woodstox = 'com.fasterxml.woodstox:woodstox-core:6.3.1'
